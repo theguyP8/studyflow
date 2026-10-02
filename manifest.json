@@ -1,0 +1,19 @@
+{
+  "name": "StudyFlow",
+  "short_name": "StudyFlow",
+  "description": "Study tracker: focus timer, tasks, notes and progress.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0e1525",
+  "theme_color": "#0e1525",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Add task", "short_name": "Add task", "url": "./?action=add-task", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Start 25 min", "short_name": "Focus 25", "url": "./?action=start", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

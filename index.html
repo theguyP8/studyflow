@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e1525" id="themeColorMeta" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="StudyFlow" />
+  <title>StudyFlow</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">S</div>
+        <div><strong>StudyFlow</strong><span>Study tracker</span></div>
+      </div>
+
+      <nav class="main-nav">
+        <button class="nav-btn active" data-view="dashboard"><span>⌂</span> Dashboard</button>
+        <button class="nav-btn" data-view="subjects"><span>▦</span> Subjects</button>
+        <button class="nav-btn" data-view="study-room"><span>◷</span> Study room</button>
+        <button class="nav-btn" data-view="tasks"><span>✓</span> Tasks</button>
+        <button class="nav-btn" data-view="notes"><span>✎</span> Notes</button>
+        <button class="nav-btn" data-view="reminders"><span>◌</span> Reminders</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="level-card">
+          <div class="level-top">
+            <span>Level <strong id="sidebarLevel">1</strong></span>
+            <span id="sidebarXP">0 XP</span>
+          </div>
+          <div class="progress-track small"><div id="sidebarXPBar" class="progress-fill"></div></div>
+          <small id="sidebarXPText">250 XP to next level</small>
+        </div>
+        <button class="nav-btn" data-view="research"><span>⌁</span> Research survey</button>
+        <button class="nav-btn" data-view="settings"><span>⚙</span> Settings</button>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim"></div>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">
+          <p class="date" id="dateLabel"></p>
+          <h1 id="pageTitle">Dashboard</h1>
+        </div>
+        <div class="top-actions">
+          <button class="ghost-btn" id="quickSessionBtn">Start 25 min</button>
+          <button class="primary-btn" id="quickTaskBtn">+ Task</button>
+        </div>
+      </header>
+
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard">
+        <div class="hero-grid">
+          <article class="hero-card">
+            <div class="hero-text">
+              <h2 id="dashboardGreeting">Build the streak.</h2>
+              <p class="muted" id="dailyMessage"></p>
+              <div class="progress-track hero-bar"><div class="progress-fill" id="todayBar"></div></div>
+            </div>
+            <div class="hero-stat">
+              <span id="todayMinutes">0</span>
+              <small>minutes today</small>
+            </div>
+          </article>
+          <article class="streak-card">
+            <div class="streak-icon">🔥</div>
+            <div>
+              <span class="muted">Current streak</span>
+              <strong id="streakCount">0 days</strong>
+              <small id="streakSubtext">Start today to begin it.</small>
+            </div>
+          </article>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card"><span>Last 7 days</span><strong id="weekMinutes">0m</strong><small id="weekTrend">No data yet</small></article>
+          <article class="metric-card"><span>Total time</span><strong id="totalMinutes">0m</strong><small id="totalSessions">0 sessions</small></article>
+          <article class="metric-card"><span>Tasks done</span><strong id="completedTasks">0</strong><small id="taskCompletionRate">0% completion</small></article>
+          <article class="metric-card"><span>Topics done</span><strong id="completedTopics">0</strong><small id="topicCompletionRate">0% of topics</small></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel">
+            <div class="panel-head"><h3>Study activity</h3><span class="pill" id="weeklyFocusPill">0h focus</span></div>
+            <div class="bar-chart" id="weeklyChart"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><h3>Time by subject</h3><span class="muted">all time</span></div>
+            <div id="subjectDistribution" class="subject-list"></div>
+          </article>
+        </div>
+
+        <div class="dashboard-grid lower">
+          <article class="panel">
+            <div class="panel-head"><h3>Recent sessions</h3><button class="text-btn" data-view-target="study-room">Open study room</button></div>
+            <div id="recentSessions" class="stack-list"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><h3>Up next</h3><button class="text-btn" data-view-target="tasks">All tasks</button></div>
+            <div id="dashboardTasks" class="stack-list"></div>
+          </article>
+        </div>
+      </section>
+
+      <!-- SUBJECTS -->
+      <section class="view" id="view-subjects">
+        <div class="section-head">
+          <div><h2>Subjects</h2><p class="muted">Topics are your learning trail. Tick them off as you actually cover them.</p></div>
+          <button class="primary-btn" id="addSubjectBtn">+ Subject</button>
+        </div>
+        <div id="subjectCards" class="subject-cards"></div>
+      </section>
+
+      <!-- STUDY ROOM -->
+      <section class="view" id="view-study-room">
+        <div class="study-room-grid">
+          <article class="timer-panel panel">
+            <div class="timer-mode">
+              <button class="mode-btn active" data-duration="25">25 min</button>
+              <button class="mode-btn" data-duration="50">50 min</button>
+              <button class="mode-btn" data-duration="90">90 min</button>
+              <button class="mode-btn" data-duration="custom">Custom</button>
+            </div>
+
+            <div class="ring-wrap">
+              <svg class="ring" viewBox="0 0 300 300" aria-hidden="true">
+                <circle class="ring-track" cx="150" cy="150" r="136"></circle>
+                <circle class="ring-progress" id="ringProgress" cx="150" cy="150" r="136" transform="rotate(-90 150 150)"></circle>
+              </svg>
+              <div class="ring-center">
+                <div class="timer-display" id="timerDisplay" role="timer">25:00</div>
+                <span id="timerStatus">Ready</span>
+              </div>
+            </div>
+
+            <div class="timer-controls">
+              <button class="primary-btn large" id="timerStartBtn">Start focus</button>
+              <button class="secondary-btn large" id="timerLogBtn">Finish &amp; log</button>
+              <button class="ghost-btn large" id="timerResetBtn">Reset</button>
+            </div>
+
+            <div class="timer-meta">
+              <label>Subject<select id="timerSubject"></select></label>
+              <label>Topic<select id="timerTopic"></select></label>
+              <label>Session note<input id="timerNote" placeholder="What are you working on?" maxlength="160" /></label>
+            </div>
+          </article>
+
+          <div class="study-side">
+            <article class="panel">
+              <div class="panel-head"><h3>Open tasks for this subject</h3></div>
+              <div id="studyTasks" class="stack-list"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-head"><h3>Quick capture</h3></div>
+              <textarea id="quickNote" rows="6" placeholder="Concepts, mistakes, questions, formulas..."></textarea>
+              <button class="secondary-btn full" id="saveQuickNoteBtn">Save note</button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- TASKS -->
+      <section class="view" id="view-tasks">
+        <div class="section-head">
+          <div><h2>Tasks</h2><p class="muted">Break “study Analyse 2” into things you can actually finish.</p></div>
+          <button class="primary-btn" id="addTaskBtn">+ Task with details</button>
+        </div>
+
+        <div class="quick-add">
+          <input id="quickTaskInput" placeholder="Add a task and press Enter  (end with ! for high priority)" maxlength="140" />
+          <select id="quickTaskSubject" aria-label="Subject for new task"></select>
+          <button class="primary-btn" id="quickTaskAddBtn">Add</button>
+        </div>
+
+        <div class="task-toolbar">
+          <div class="filter-tabs" id="taskFilters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="open">Open</button>
+            <button class="filter-btn" data-filter="today">Due today</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+          </div>
+          <select id="taskSubjectFilter"><option value="all">All subjects</option></select>
+        </div>
+        <div id="taskList" class="task-list"></div>
+      </section>
+
+      <!-- NOTES -->
+      <section class="view" id="view-notes">
+        <div class="section-head">
+          <div><h2>Notes</h2><p class="muted">Notes save as you type.</p></div>
+          <button class="primary-btn" id="addNoteBtn">+ Note</button>
+        </div>
+        <div class="notes-layout">
+          <div id="notesList" class="notes-list"></div>
+          <article class="panel note-editor" id="noteEditor"></article>
+        </div>
+      </section>
+
+      <!-- REMINDERS -->
+      <section class="view" id="view-reminders">
+        <div class="section-head">
+          <div>
+            <h2>Reminders</h2>
+            <p class="muted">Reminders only fire while StudyFlow is open (a browser limit). For a reminder that always arrives, add a repeating event to your phone's calendar too.</p>
+          </div>
+          <button class="primary-btn" id="addReminderBtn">+ Reminder</button>
+        </div>
+        <div class="reminder-banner">
+          <div>
+            <strong>Study reminders</strong>
+            <p id="reminderStatusText">No reminder configured.</p>
+          </div>
+          <button class="secondary-btn" id="enableNotificationsBtn">Enable notifications</button>
+        </div>
+        <div id="reminderList" class="reminder-list"></div>
+      </section>
+
+      <!-- RESEARCH -->
+      <section class="view" id="view-research">
+        <div class="section-head">
+          <div>
+            <h2>Research survey</h2>
+            <p class="muted">Stores repeated Likert responses for later analysis. The app collects the data; run the SEM in R, SmartPLS, AMOS or Jamovi.</p>
+          </div>
+          <button class="secondary-btn" id="exportResearchBtn">Export survey CSV</button>
+        </div>
+        <div class="research-grid">
+          <article class="panel tam-summary">
+            <div class="panel-head"><h3>Acceptance profile</h3></div>
+            <div class="construct-row"><span>Perceived ease of use</span><strong id="peouMean">—</strong></div>
+            <div class="construct-row"><span>Perceived usefulness</span><strong id="puMean">—</strong></div>
+            <div class="construct-row"><span>Attitude</span><strong id="attMean">—</strong></div>
+            <div class="construct-row"><span>Behavioral intention</span><strong id="biMean">—</strong></div>
+            <div class="info-box">Pair these survey records with your time, session and task data when you test relationships later.</div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><h3>Weekly survey</h3></div>
+            <form id="tamForm" class="tam-form">
+              <p class="muted">Rate each statement from 1 (strongly disagree) to 7 (strongly agree).</p>
+              <label>I find StudyFlow easy to use.<select name="peou1" required><option value="">Select</option></select></label>
+              <label>Learning to use StudyFlow is easy for me.<select name="peou2" required><option value="">Select</option></select></label>
+              <label>StudyFlow helps me organize my studying.<select name="pu1" required><option value="">Select</option></select></label>
+              <label>StudyFlow helps me study more effectively.<select name="pu2" required><option value="">Select</option></select></label>
+              <label>Using StudyFlow is a good idea for my studies.<select name="att1" required><option value="">Select</option></select></label>
+              <label>I intend to continue using StudyFlow.<select name="bi1" required><option value="">Select</option></select></label>
+              <label>I would recommend a tool like StudyFlow to another CS student.<select name="bi2" required><option value="">Select</option></select></label>
+              <button class="primary-btn full" type="submit">Save survey response</button>
+            </form>
+          </article>
+        </div>
+        <article class="panel survey-history">
+          <div class="panel-head"><h3>Survey history</h3><span class="muted" id="surveyCount">0 responses</span></div>
+          <div class="survey-row survey-header"><span>Date</span><strong>PEOU</strong><strong>PU</strong><strong>ATT</strong><strong>BI</strong></div>
+          <div id="surveyHistory"></div>
+        </article>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <div class="section-head">
+          <div><h2>Settings</h2><p class="muted">Your data lives in this browser. Export a backup now and then.</p></div>
+        </div>
+        <div class="settings-grid">
+          <article class="panel">
+            <div class="panel-head"><h3>Profile</h3></div>
+            <label>Your name<input id="profileName" placeholder="Student" /></label>
+            <label>Daily target (minutes)<input id="dailyTarget" type="number" min="10" max="600" /></label>
+            <label>Theme
+              <select id="themeSelect">
+                <option value="system">Match my device</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </label>
+            <button class="primary-btn" id="saveSettingsBtn">Save settings</button>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head"><h3>Install on your phone</h3></div>
+            <p class="muted">Install StudyFlow to get an app icon, offline use, and a count of tasks due on the icon.</p>
+            <button class="primary-btn" id="installBtn" hidden>Install app</button>
+            <p class="tiny">iPhone: open in Safari, tap Share, then Add to Home Screen. Android: Chrome menu, then Install app. Long-press the icon for the Add task and Start 25 min shortcuts.</p>
+          </article>
+
+          <article class="panel">
+            <div class="panel-head"><h3>Backup</h3></div>
+            <p class="muted">Export everything before switching devices or clearing browser data.</p>
+            <div class="button-row">
+              <button class="secondary-btn" id="exportJsonBtn">Export JSON</button>
+              <label class="file-btn">Import JSON<input id="importJsonInput" type="file" accept=".json" hidden /></label>
+            </div>
+            <button class="danger-btn" id="resetDataBtn">Reset all data</button>
+          </article>
+
+          <article class="panel wide-panel">
+            <div class="panel-head"><h3>Email webhook (optional)</h3></div>
+            <p class="muted">Paste an endpoint from Google Apps Script or your own backend. StudyFlow posts reminder details there when one is due.</p>
+            <label>Webhook URL<input id="emailWebhook" type="url" placeholder="https://..." /></label>
+            <button class="secondary-btn" id="saveWebhookBtn">Save webhook</button>
+            <p class="tiny">Keep mail-service secrets on the server that receives the webhook, never in this app.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Floating timer (shows when a session is running and you're not in the study room) -->
+  <button class="mini-timer" id="miniTimer" hidden aria-label="Open study room">
+    <span class="mini-dot"></span>
+    <strong id="miniTimerTime">25:00</strong>
+    <span id="miniTimerState">Focusing</span>
+  </button>
+
+  <!-- Mobile tab bar -->
+  <nav class="tabbar" aria-label="Main">
+    <button class="tab-btn active" data-view="dashboard"><span>⌂</span>Home</button>
+    <button class="tab-btn" data-view="study-room"><span>◷</span>Study</button>
+    <button class="tab-btn" data-view="tasks"><span>✓</span>Tasks</button>
+    <button class="tab-btn" data-view="notes"><span>✎</span>Notes</button>
+    <button class="tab-btn" id="moreBtn"><span>☰</span>More</button>
+  </nav>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <div class="modal" id="modalContent" role="dialog" aria-modal="true"></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
